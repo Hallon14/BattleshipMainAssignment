@@ -1,6 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum orientation
+{
+    horizontal,
+    vertical,
+}
+
 public class OttWen : IBattleship
 {
 
@@ -18,8 +24,8 @@ public class OttWen : IBattleship
     string[] Ships = { "Battleship", "Cruiser", "Cruiser", "Patrol Boat", "Submarine" };
     Dictionary<string, int> Shipdata = new Dictionary<string, int>();
     //Variables to offset ship from eachother to spread them out
-    public int gridOffsetx; 
-    public int gridOffsety; 
+    public int gridOffsetx;
+    public int gridOffsety;
 
 
     public string GetName()
@@ -58,12 +64,13 @@ public class OttWen : IBattleship
 
     private void placeShip(string ship)
     {
-        //0 for horizontal, 1 for vertical.
-        int rotation = Random.Range(0, 2);
+        //0 for horizontal, 1 for vertical. Change to ENUM probably (Chris seems clever)
+        int choseRotation = Random.Range(0, 2);
+        orientation rotation = choseRotation == 0 ? orientation.horizontal : orientation.vertical;
 
         //Choses valid anchor point with helper funciton
         Vector2Int anchorPoint = chooseAnchorPoint(rotation, ship);
-        
+
         //Places ship on grid based on rotation
         if (rotation == 0)
         {
@@ -81,11 +88,11 @@ public class OttWen : IBattleship
         }
     }
 
-    private Vector2Int chooseAnchorPoint(int rotation, string ship)
-    {
+    private Vector2Int chooseAnchorPoint(orientation rotation, string ship){
         Vector2Int anchorPoint = Vector2Int.zero;
         bool pointOkay = false;
-        while (!pointOkay)
+        int attempts = 0;
+        while (!pointOkay && attempts <= 1000)
         {
             int failCount = 0;
             anchorPoint = rotation == 0 ?
@@ -94,11 +101,12 @@ public class OttWen : IBattleship
 
             int distanceToYMax = gridSize.y - anchorPoint.y;
             int distanceToXMax = gridSize.x - anchorPoint.x;
+
             int yCheckMax = Mathf.Min(distanceToYMax, gridOffsety);
             int xCheckMax = Mathf.Min(distanceToXMax, gridOffsetx);
+
             int yCheckMin = Mathf.Min(anchorPoint.y, gridOffsety);
             int xCheckMin = Mathf.Min(anchorPoint.x, gridOffsetx);
-
 
             for (int x = anchorPoint.x - xCheckMin; x < anchorPoint.x + xCheckMax; x++)
             {
@@ -110,13 +118,16 @@ public class OttWen : IBattleship
                     }
                 }
             }
-            if (failCount == 0){
-                pointOkay = true;
-            }
-        }
-        //Debug.Log(anchorPoint + " Chosen for " + ship);
-        return anchorPoint;
 
+            if (failCount == 0)
+            {
+                pointOkay = true;
+                return anchorPoint;
+            }
+            attempts++; //safeguard from while loop
+        }
+        return Vector2Int.zero;
+        //TODO Split function in two, first check actual position of ship +1. Next check sourrounding tiles.
     }
 
     public Vector2Int Fire()
