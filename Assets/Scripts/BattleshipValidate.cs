@@ -6,13 +6,15 @@ using UnityEngine;
 public class BattleshipValidate : MonoBehaviour
 {
     IBattleship player;
-    bool[,] playerGrid;
-    Vector2Int gridSize;
+    public bool[,] playerGrid;
+    public Vector2Int gridSize;
+    public TilemapVisualizer tilemapVisualizer;
+    public int NumberOfTests = 100;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        for (int i = 0; i < 100; i++) //Numer of tests to run
+        for (int i = 0; i < NumberOfTests; i++) //Numer of tests to run
         {
             player = new OttWen(); //REPLACE WITH YOUR CLASS!
             //set up grid size
@@ -23,6 +25,11 @@ public class BattleshipValidate : MonoBehaviour
 
             //Validate player
             bool playerValid = Validate(playerGrid);
+            if (!Validate(playerGrid))
+            {
+                tilemapVisualizer.DrawGrid();
+                break;
+            }
 
             Debug.Log(player.GetName() + " valid: " + playerValid);
         }

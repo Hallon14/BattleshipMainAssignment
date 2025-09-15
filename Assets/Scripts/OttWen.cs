@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using Unity.Mathematics;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class OttWen : IBattleship
@@ -8,7 +6,8 @@ public class OttWen : IBattleship
 
     bool[,] myPlayingField;
     int[,] opposingPlayerField;
-    Vector2Int gridSize;
+
+    public Vector2Int gridSize;
 
 
     //Ships
@@ -37,8 +36,8 @@ public class OttWen : IBattleship
         opposingPlayerField = new int[gridSize.x, gridSize.y];
 
         //Setting offset variables dynamically
-        gridOffsety = gridSize.y / 10;
-        gridOffsetx = gridSize.x / 10;
+        gridOffsetx = Mathf.RoundToInt(gridSize.x / 10);
+        gridOffsety = Mathf.RoundToInt(gridSize.y / 10);
 
 
 
@@ -57,20 +56,10 @@ public class OttWen : IBattleship
         return myPlayingField;
     }
 
-    public Vector2Int Fire()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void Result(Vector2Int position, bool hit, bool sunk)
-    {
-        throw new System.NotImplementedException();
-    }
-
     private void placeShip(string ship)
     {
         //0 for horizontal, 1 for vertical.
-        int rotation = UnityEngine.Random.Range(0, 2);
+        int rotation = Random.Range(0, 2);
 
         //Choses valid anchor point with helper funciton
         Vector2Int anchorPoint = chooseAnchorPoint(rotation, ship);
@@ -100,15 +89,16 @@ public class OttWen : IBattleship
         {
             int failCount = 0;
             anchorPoint = rotation == 0 ?
-                new Vector2Int(UnityEngine.Random.Range(0, gridSize.x - Shipdata[ship]), UnityEngine.Random.Range(0, gridSize.y)) :
-                new Vector2Int(UnityEngine.Random.Range(0, gridSize.x), UnityEngine.Random.Range(0, gridSize.y - Shipdata[ship]));
+                new Vector2Int(Random.Range(0, gridSize.x - Shipdata[ship]), Random.Range(0, gridSize.y)) :
+                new Vector2Int(Random.Range(0, gridSize.x), Random.Range(0, gridSize.y - Shipdata[ship]));
 
             int distanceToYMax = gridSize.y - anchorPoint.y;
             int distanceToXMax = gridSize.x - anchorPoint.x;
-            int yCheckMax = math.min(distanceToYMax, gridOffsety);
-            int xCheckMax = math.min(distanceToXMax, gridOffsetx);
-            int yCheckMin = math.min(anchorPoint.y, gridOffsety);
-            int xCheckMin = math.min(anchorPoint.x, gridOffsetx);
+            int yCheckMax = Mathf.Min(distanceToYMax, gridOffsety);
+            int xCheckMax = Mathf.Min(distanceToXMax, gridOffsetx);
+            int yCheckMin = Mathf.Min(anchorPoint.y, gridOffsety);
+            int xCheckMin = Mathf.Min(anchorPoint.x, gridOffsetx);
+
 
             for (int x = anchorPoint.x - xCheckMin; x < anchorPoint.x + xCheckMax; x++)
             {
@@ -124,8 +114,18 @@ public class OttWen : IBattleship
                 pointOkay = true;
             }
         }
-
+        //Debug.Log(anchorPoint + " Chosen for " + ship);
         return anchorPoint;
 
+    }
+
+    public Vector2Int Fire()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void Result(Vector2Int position, bool hit, bool sunk)
+    {
+        throw new System.NotImplementedException();
     }
 } 
