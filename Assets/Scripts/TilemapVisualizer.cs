@@ -5,9 +5,10 @@ public class TilemapVisualizer : MonoBehaviour
 {
     public Tilemap tilemap;    
     public Tile shipTile;     
-    public Tile waterTile;     
+    public Tile waterTile;
     public BattleshipValidate battleshipValidate;
     public bool[,] grid;
+
 
     public void DrawGrid()
     {

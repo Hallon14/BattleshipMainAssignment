@@ -33,6 +33,7 @@ public class BattleshipValidate : MonoBehaviour
 
             Debug.Log(player.GetName() + " valid: " + playerValid);
         }
+        tilemapVisualizer.DrawGrid();
     }
 
     private bool Validate(bool[,] playerGrid)

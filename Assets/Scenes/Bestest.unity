@@ -271,7 +271,7 @@ Transform:
   m_GameObject: {fileID: 559044379}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7.52469, y: 5.27823, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -290,7 +290,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BattleshipValidate
   gridSize: {x: 0, y: 0}
-  tilemapVisualizer: {fileID: 1922024297}
+  tilemapVisualizer: {fileID: 1922024300}
 --- !u!1 &1173305580
 GameObject:
   m_ObjectHideFlags: 0
@@ -438,7 +438,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1922024299}
   - component: {fileID: 1922024298}
-  - component: {fileID: 1922024297}
+  - component: {fileID: 1922024300}
   m_Layer: 0
   m_Name: Grid
   m_TagString: Untagged
@@ -446,22 +446,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1922024297
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1922024296}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 16b153d77e9c49b42a3a24a4f2022bdc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BoolGridVisualizer
-  tilemap: {fileID: 388225708}
-  shipTile: {fileID: 11400000, guid: a562d48984a7f094e8980e188d241701, type: 2}
-  waterTile: {fileID: 11400000, guid: f879a15e3d49a3746bd21a1ae6fa02d6, type: 2}
-  battleshipValidate: {fileID: 0}
 --- !u!156049354 &1922024298
 Grid:
   m_ObjectHideFlags: 0
@@ -490,6 +474,22 @@ Transform:
   - {fileID: 388225710}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1922024300
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1922024296}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16b153d77e9c49b42a3a24a4f2022bdc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TilemapVisualizer
+  tilemap: {fileID: 388225708}
+  shipTile: {fileID: 11400000, guid: a562d48984a7f094e8980e188d241701, type: 2}
+  waterTile: {fileID: 11400000, guid: f879a15e3d49a3746bd21a1ae6fa02d6, type: 2}
+  battleshipValidate: {fileID: 559044382}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

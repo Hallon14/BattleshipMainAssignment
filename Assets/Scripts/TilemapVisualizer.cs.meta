@@ -1,2 +1,14 @@
 fileFormatVersion: 2
 guid: 16b153d77e9c49b42a3a24a4f2022bdc
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - tilemap: {instanceID: 0}
+  - shipTile: {fileID: 11400000, guid: a562d48984a7f094e8980e188d241701, type: 2}
+  - waterTile: {fileID: 11400000, guid: f879a15e3d49a3746bd21a1ae6fa02d6, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

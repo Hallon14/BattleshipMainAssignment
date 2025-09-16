@@ -68,7 +68,7 @@ public class OttWen : IBattleship
     private void placeShip(shipType vessel)
     {
         //Selecting rotaion of ship
-        int choseRotation = 0; //Random.Range(0, 1);
+        int choseRotation = Random.Range(0, 2);
         rotation shipRotation = choseRotation == 0 ? rotation.horizontal : rotation.vertical;
 
         //Choseing a point and validates it with helperfunction below
@@ -76,7 +76,7 @@ public class OttWen : IBattleship
         int attempts = 0;
         bool pointOkay = false;
 
-        while (!pointOkay || attempts <= 1000)
+        while (!pointOkay && attempts <= 1000) // FUCK THIS AND ALL IT STANDS FOR
         {
             //Selecting an anchor point randomly with modified x and y values based on rotaion.
             anchorPoint = shipRotation == rotation.horizontal ?
@@ -86,7 +86,7 @@ public class OttWen : IBattleship
             //Validates anchor point, if it isnt posible, throw exception
             pointOkay = validatePoint(anchorPoint, shipRotation, vessel);
             attempts++;
-
+            
             if (attempts > 1000)
             {
                 throw new System.Exception("Couldnt find valid anchor point within 1000 attempts");
@@ -115,7 +115,7 @@ public class OttWen : IBattleship
         }
     }
 
-    private bool validatePoint(Vector2Int point, rotation rotation, shipType vessel)
+    private bool validatePoint(Vector2Int point, rotation shipRotation, shipType vessel)
     {
         //First Check, checks if the point itself is a valid starting point.
         if (myBoard[point.x, point.y])
@@ -124,7 +124,7 @@ public class OttWen : IBattleship
         }
 
         //Second Check, checks the position of the entire ship
-        if (rotation == rotation.horizontal)
+        if (shipRotation == rotation.horizontal)
         {
             for (int i = 0; i < shipData[vessel]; i++)
             {
@@ -134,7 +134,7 @@ public class OttWen : IBattleship
                 }
             }
         }
-        if (rotation == rotation.vertical)
+        if (shipRotation == rotation.vertical)
         {
             for (int i = 0; i < shipData[vessel]; i++)
             {
@@ -146,26 +146,12 @@ public class OttWen : IBattleship
         }
         //Third Check, looks at the surrounding tiles aswell.
         //Declaring start and end variables for the grid search
-        /*         int xFrom = point.x - Mathf.Min(xSpace, point.y);
-                int xTo = point.x + shipData[vessel] + Mathf.Min(xSpace, fieldSize.x - point.x);
-                int yFrom = point.y - Mathf.Min(ySpace, point.x);
-                int yTo = point.y + Mathf.Min(ySpace, fieldSize.y - point.y); */
 
-        int xFrom = xSpace >= point.y ?
-            point.x - point.y :
-            point.x - xSpace;
+        int xFrom = Mathf.Max(0, point.x - xSpace);
+        int xTo   = Mathf.Min(fieldSize.x, point.x + (shipRotation == rotation.horizontal ? shipData[vessel] : 1) + xSpace);
 
-        int xTo = fieldSize.x - point.x >= xSpace ?
-            point.x + xSpace :
-            point.x + (fieldSize.x - point.x);
-
-        int yFrom = ySpace >= point.x ?
-            point.y - point.x :
-            point.y - ySpace;
-
-        int yTo = fieldSize.y - point.y >= ySpace ?
-            point.y + ySpace :
-            point.y + (fieldSize.x - point.x);
+        int yFrom = Mathf.Max(0, point.y - ySpace);
+        int yTo   = Mathf.Min(fieldSize.y, point.y + (shipRotation == rotation.vertical ? shipData[vessel] : 1) + ySpace);
 
         for (int x = xFrom; x < xTo; x++)
         {
@@ -177,6 +163,7 @@ public class OttWen : IBattleship
                 }
             }
         }
+
 
         //All tests passed, return true
         return true;
