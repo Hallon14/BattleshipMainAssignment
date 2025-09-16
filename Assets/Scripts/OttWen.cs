@@ -146,10 +146,26 @@ public class OttWen : IBattleship
         }
         //Third Check, looks at the surrounding tiles aswell.
         //Declaring start and end variables for the grid search
-        int xFrom = point.x - Mathf.Min(xSpace, point.y);
-        int xTo = point.x + shipData[vessel] + Mathf.Min(xSpace, fieldSize.x - point.x);
-        int yFrom = point.y - Mathf.Min(ySpace, point.x);
-        int yTo = point.y + Mathf.Min(ySpace, fieldSize.y - point.y);
+        /*         int xFrom = point.x - Mathf.Min(xSpace, point.y);
+                int xTo = point.x + shipData[vessel] + Mathf.Min(xSpace, fieldSize.x - point.x);
+                int yFrom = point.y - Mathf.Min(ySpace, point.x);
+                int yTo = point.y + Mathf.Min(ySpace, fieldSize.y - point.y); */
+
+        int xFrom = xSpace >= point.y ?
+            point.x - point.y :
+            point.x - xSpace;
+
+        int xTo = fieldSize.x - point.x >= xSpace ?
+            point.x + xSpace :
+            point.x + (fieldSize.x - point.x);
+
+        int yFrom = ySpace >= point.x ?
+            point.y - point.x :
+            point.y - ySpace;
+
+        int yTo = fieldSize.y - point.y >= ySpace ?
+            point.y + ySpace :
+            point.y + (fieldSize.x - point.x);
 
         for (int x = xFrom; x < xTo; x++)
         {
