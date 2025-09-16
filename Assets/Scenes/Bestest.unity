@@ -276,7 +276,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BattleshipValidate
   gridSize: {x: 0, y: 0}
   tilemapVisualizer: {fileID: 1922024297}
-  NumberOfTests: 100
+  NumberOfTests: 1000
 --- !u!4 &559044381
 Transform:
   m_ObjectHideFlags: 0
