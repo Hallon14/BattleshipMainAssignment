@@ -14,7 +14,7 @@ public class BattleshipValidate : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        for (int i = 0; i < 100; i++) //Numer of tests to run
+        for (int i = 0; i < 10000; i++) //Numer of tests to run
         {
             player = new OttWen(); //REPLACE WITH YOUR CLASS!
 
