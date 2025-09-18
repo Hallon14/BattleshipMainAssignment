@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using NUnit.Framework.Interfaces;
 using UnityEngine;
 
 public enum rotation
@@ -20,18 +21,24 @@ public class OttWen : IBattleship
     //Variables needed for defence
     bool[,] myBoard;
     public Vector2Int fieldSize;
+
     //Ships - Ships added to the dictionary during the NewGame() funciton
     shipType[] myShips = { shipType.Battleship, shipType.Cruiser, shipType.Cruiser, shipType.Patrol_Boat, shipType.Submarine };
     Dictionary<shipType, int> shipData = new Dictionary<shipType, int>();
-
-    //Variables for fireing method
-    int[,] heatMap;
-    List<shipType> enemyShips = new List<shipType> { shipType.Battleship, shipType.Cruiser, shipType.Cruiser, shipType.Patrol_Boat, shipType.Submarine };   
-
-
+    
     //Variables to offset ship from eachother to spread them out
     int xSpace;
     int ySpace;
+
+
+    //Variables needed for offence
+    private StateMachine stateMachine;
+    int[,] heatMap;
+    List<shipType> enemyShips = new List<shipType> { shipType.Battleship, shipType.Cruiser, shipType.Cruiser, shipType.Patrol_Boat, shipType.Submarine };
+    public Vector2Int lastShot;
+    public bool lastShotHit;
+    public bool lastShotSunk;
+
 
     //Function to return my AI player name to Robert-Sensei
     public string GetName()
@@ -55,6 +62,13 @@ public class OttWen : IBattleship
         shipData.Add(shipType.Cruiser, 3);
         shipData.Add(shipType.Patrol_Boat, 2);
         shipData.Add(shipType.Submarine, 1);
+
+        //Setting up statemachine for my artillery
+        stateMachine = new StateMachine();
+
+        //Remember otto you might need to pass more information to your states
+        Hunt hunt = new Hunt();
+        Search search = new Search();
         
         
         
@@ -195,10 +209,15 @@ public class OttWen : IBattleship
     {
         throw new System.NotImplementedException();
     }
-
+    /* 
+    As soon as i hit something, i want to enter hunt mode in the statemachine. And calculate next firing location
+    And when i have sunk that ship, i want to go back into searchmode. 
+    */
     public void Result(Vector2Int position, bool hit, bool sunk)
     {
-        throw new System.NotImplementedException();
+        lastShot = position;
+        lastShotHit = hit;
+        lastShotSunk = sunk;
     }
     #endregion
 } 
