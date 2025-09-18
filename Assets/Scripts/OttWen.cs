@@ -66,7 +66,7 @@ public class OttWen : IBattleship
         //Setting up statemachine for my artillery
         stateMachine = new StateMachine();
 
-        //Remember otto you might need to pass more information to your states
+        //Remember otto you might need to pass more information to your states. Like the heatmap u dumb bitch
         Hunt hunt = new Hunt();
         Search search = new Search();
         
