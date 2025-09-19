@@ -25,7 +25,7 @@ public class OttWen : IBattleship
     //Ships - Ships added to the dictionary during the NewGame() funciton
     shipType[] myShips = { shipType.Battleship, shipType.Cruiser, shipType.Cruiser, shipType.Patrol_Boat, shipType.Submarine };
     Dictionary<shipType, int> shipData = new Dictionary<shipType, int>();
-    
+
     //Variables to offset ship from eachother to spread them out
     int xSpace;
     int ySpace;
@@ -35,6 +35,10 @@ public class OttWen : IBattleship
     private StateMachine stateMachine;
     int[,] heatMap;
     List<shipType> enemyShips = new List<shipType> { shipType.Battleship, shipType.Cruiser, shipType.Cruiser, shipType.Patrol_Boat, shipType.Submarine };
+    HashSet<Vector2Int> hits;
+    HashSet<Vector2Int> misses;
+
+    //Return variables for Result()
     public Vector2Int lastShot;
     public bool lastShotHit;
     public bool lastShotSunk;
@@ -69,9 +73,9 @@ public class OttWen : IBattleship
         //Remember otto you might need to pass more information to your states. Like the heatmap u dumb bitch
         Hunt hunt = new Hunt();
         Search search = new Search();
-        
-        
-        
+
+
+
 
         //placeing all ships with helperfunction (see below)
         foreach (shipType vessel in myShips)
@@ -199,15 +203,13 @@ public class OttWen : IBattleship
     State machine needed with two states. Hunting and Searching. 
     Fire first couple of shots randomly and apply heatmap on an int[,] of the opposing player board
     After set amount of shots, fire att the most probably coordinate and update int[,] based on result.
-    int = 0, Miss aka probability is actually 0.
-    int = 1, unlikely
-    int = 2, medium
-    int = 3, probable
-    int = 4, Hit
     */
+
+
     public Vector2Int Fire()
     {
         throw new System.NotImplementedException();
+        //NOTE TO SELF. WHEN SHIP IS SUNK. ADD ALL SURROUNGING TILES TO MISSES. AS NO SHIP CAN BE NEXT TO ONE ANOTHER
     }
     /* 
     As soon as i hit something, i want to enter hunt mode in the statemachine. And calculate next firing location
@@ -218,6 +220,87 @@ public class OttWen : IBattleship
         lastShot = position;
         lastShotHit = hit;
         lastShotSunk = sunk;
+
+        //Updateing hit/miss lists
+        if (lastShotHit)
+        {
+            hits.Add(lastShot);
+        }
+        else
+        {
+            misses.Add(lastShot);
+        }
+
+
+        //Passing variables to update heatmap
+        updateHeatmap(heatMap, lastShot, enemyShips, hits, misses);
+    }
+    
+    //Helper function to update my heatmap - taking all previous hits/misses into consideration
+    public void updateHeatmap(int[,] heatMap, Vector2Int location, List<shipType> remainingFoes, HashSet<Vector2Int> hits, HashSet<Vector2Int> misses)
+    {
+        //Resetting the entire heatmap everytime to recalculate using the HashSets
+        for (int x = 0; x < fieldSize.x; x++)
+            for (int y = 0; y < fieldSize.y; y++)
+                heatMap[x, y] = 0;
+
+
+        // For each ship still in play we calculate how many squares it can be in
+        foreach (shipType Ship in remainingFoes)
+        {
+            // Horizontal placements
+            for (int y = 0; y < fieldSize.y; y++)
+            {
+                for (int x = 0; x <= fieldSize.x - shipData[Ship]; x++)
+                {
+                    bool valid = true;
+                    for (int i = 0; i < shipData[Ship]; i++)
+                    {
+                        Vector2Int pos = new Vector2Int(x + i, y);
+                        if (misses.Contains(pos)) { valid = false; break; }
+                    }
+
+                    if (valid)
+                    {
+                        for (int i = 0; i < shipData[Ship]; i++)
+                            heatMap[x + i, y]++;
+                    }
+                }
+            }
+
+            // Vertical placements
+            for (int x = 0; x < fieldSize.x; x++)
+            {
+                for (int y = 0; y <= fieldSize.y - shipData[Ship]; y++)
+                {
+                    bool valid = true;
+                    for (int i = 0; i < shipData[Ship]; i++)
+                    {
+                        Vector2Int pos = new Vector2Int(x, y + i);
+                        if (misses.Contains(pos)) { valid = false; break; }
+                    }
+
+                    if (valid)
+                    {
+                        for (int i = 0; i < shipData[Ship]; i++)
+                            heatMap[x, y + i]++;
+                    }
+                }
+            }
+        }
+
+        // If the last shot was a hit, boost neighboring probabilities
+        if (hits.Contains(location))
+        {
+            Vector2Int[] directions = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
+            foreach (Vector2Int dir in directions)
+            {
+                Vector2Int neighbor = location + dir;
+                //if its inside the playing area
+                if (neighbor.x >= 0 && neighbor.y >= 0 && neighbor.x < fieldSize.x && neighbor.y < fieldSize.y)
+                    heatMap[neighbor.x, neighbor.y] += 5;
+            }
+        }
     }
     #endregion
 } 
