@@ -1,11 +1,13 @@
+using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework.Interfaces;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public enum rotation
 {
-    horizontal,
-    vertical,
+    Horizontal,
+    Vertical
 }
 
 public enum shipType
@@ -14,6 +16,13 @@ public enum shipType
     Cruiser,
     Patrol_Boat,
     Submarine
+}
+
+public enum currentState
+{
+    Initialize,
+    Search,
+    Hunt
 }
 
 public class OttWen : IBattleship
@@ -32,11 +41,12 @@ public class OttWen : IBattleship
 
 
     //Variables needed for offence
-    private StateMachine stateMachine;
     int[,] heatMap;
     List<shipType> enemyShips = new List<shipType> { shipType.Battleship, shipType.Cruiser, shipType.Cruiser, shipType.Patrol_Boat, shipType.Submarine };
     HashSet<Vector2Int> hits;
     HashSet<Vector2Int> misses;
+    public currentState state;
+
 
     //Return variables for Result()
     public Vector2Int lastShot;
@@ -67,14 +77,8 @@ public class OttWen : IBattleship
         shipData.Add(shipType.Patrol_Boat, 2);
         shipData.Add(shipType.Submarine, 1);
 
-        //Setting up statemachine for my artillery
-        stateMachine = new StateMachine();
-
-        //Remember otto you might need to pass more information to your states. Like the heatmap u dumb bitch
-        Hunt hunt = new Hunt();
-        Search search = new Search();
-
-
+        ///Cant use different files for stateMachine so fitting replacement below
+        state = currentState.Initialize;
 
 
         //placeing all ships with helperfunction (see below)
@@ -93,8 +97,8 @@ public class OttWen : IBattleship
         //Selecting rotaion of ship
         int choseRotation = Random.Range(0, 2);
         rotation shipRotation = choseRotation == 0 ?
-            rotation.horizontal :
-            rotation.vertical;
+            rotation.Horizontal :
+            rotation.Vertical;
 
         //Choseing a point and validates it with helperfunction below
         Vector2Int anchorPoint = Vector2Int.zero;
@@ -104,7 +108,7 @@ public class OttWen : IBattleship
         while (!pointOkay && attempts <= 1000) // FUCK THIS AND ALL IT STANDS FOR
         {
             //Selecting an anchor point randomly with modified x and y values based on rotaion.
-            anchorPoint = shipRotation == rotation.horizontal ?
+            anchorPoint = shipRotation == rotation.Horizontal ?
                 new Vector2Int(Random.Range(0, fieldSize.x - shipData[vessel]), Random.Range(0, fieldSize.y)) :
                 new Vector2Int(Random.Range(0, fieldSize.x), Random.Range(0, fieldSize.y - shipData[vessel]));
 
@@ -119,7 +123,7 @@ public class OttWen : IBattleship
         }
 
         //Placeing ships based on rotation.
-        if (shipRotation == rotation.horizontal)
+        if (shipRotation == rotation.Horizontal)
         {
             for (int i = 0; i < shipData[vessel]; i++)
             {
@@ -127,7 +131,7 @@ public class OttWen : IBattleship
             }
         }
 
-        else if (shipRotation == rotation.vertical)
+        else if (shipRotation == rotation.Vertical)
         {
             for (int i = 0; i < shipData[vessel]; i++)
             {
@@ -143,7 +147,7 @@ public class OttWen : IBattleship
 
     private bool validatePoint(Vector2Int point, rotation shipRotation, shipType vessel)
     {
-        #region Validator
+        #region Ship Placement Validator
         //First Check, checks if the point itself is a valid starting point.
         if (myBoard[point.x, point.y])
         {
@@ -151,7 +155,7 @@ public class OttWen : IBattleship
         }
 
         //Second Check, checks the position of the entire ship
-        if (shipRotation == rotation.horizontal)
+        if (shipRotation == rotation.Horizontal)
         {
             for (int i = 0; i < shipData[vessel]; i++)
             {
@@ -161,7 +165,7 @@ public class OttWen : IBattleship
                 }
             }
         }
-        if (shipRotation == rotation.vertical)
+        if (shipRotation == rotation.Vertical)
         {
             for (int i = 0; i < shipData[vessel]; i++)
             {
@@ -175,10 +179,10 @@ public class OttWen : IBattleship
         //Declaring start and end variables for the grid search
 
         int xFrom = Mathf.Max(0, point.x - xSpace);
-        int xTo = Mathf.Min(fieldSize.x, point.x + (shipRotation == rotation.horizontal ? shipData[vessel] : 1) + xSpace);
+        int xTo = Mathf.Min(fieldSize.x, point.x + (shipRotation == rotation.Horizontal ? shipData[vessel] : 1) + xSpace);
 
         int yFrom = Mathf.Max(0, point.y - ySpace);
-        int yTo = Mathf.Min(fieldSize.y, point.y + (shipRotation == rotation.vertical ? shipData[vessel] : 1) + ySpace);
+        int yTo = Mathf.Min(fieldSize.y, point.y + (shipRotation == rotation.Vertical ? shipData[vessel] : 1) + ySpace);
 
         for (int x = xFrom; x < xTo; x++)
         {
@@ -208,8 +212,27 @@ public class OttWen : IBattleship
 
     public Vector2Int Fire()
     {
-        throw new System.NotImplementedException();
+        switch (state)
+        {
+            case currentState.Initialize:
+                initialFire();
+                break;
+            case currentState.Search:
+                //Searchfire
+                break;
+            case currentState.Hunt:
+                //Huntfire
+                break;
+
+        }
+        return Vector2Int.zero;
+            
         //NOTE TO SELF. WHEN SHIP IS SUNK. ADD ALL SURROUNGING TILES TO MISSES. AS NO SHIP CAN BE NEXT TO ONE ANOTHER
+    }
+
+    public Vector2Int initialFire()
+    {
+        return Vector2Int.zero;
     }
     /* 
     As soon as i hit something, i want to enter hunt mode in the statemachine. And calculate next firing location
@@ -235,9 +258,9 @@ public class OttWen : IBattleship
         //Passing variables to update heatmap
         updateHeatmap(heatMap, lastShot, enemyShips, hits, misses);
     }
-    
+
     //Helper function to update my heatmap - taking all previous hits/misses into consideration
-    public void updateHeatmap(int[,] heatMap, Vector2Int location, List<shipType> remainingFoes, HashSet<Vector2Int> hits, HashSet<Vector2Int> misses)
+    public void updateHeatmap(int[,] heatMap, Vector2Int location, List<shipType> enemyShips, HashSet<Vector2Int> hits, HashSet<Vector2Int> misses)
     {
         //Resetting the entire heatmap everytime to recalculate using the HashSets
         for (int x = 0; x < fieldSize.x; x++)
@@ -246,7 +269,7 @@ public class OttWen : IBattleship
 
 
         // For each ship still in play we calculate how many squares it can be in
-        foreach (shipType Ship in remainingFoes)
+        foreach (shipType Ship in enemyShips)
         {
             // Horizontal placements
             for (int y = 0; y < fieldSize.y; y++)
