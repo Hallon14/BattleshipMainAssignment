@@ -57,8 +57,8 @@ public class OttWen : IBattleship
         //Note int[] for opposing side to keep track of probablilites
         fieldSize = gridSize;
         myBoard = new bool[fieldSize.x, fieldSize.y];
-        xSpace = fieldSize.x / 7;
-        ySpace = fieldSize.y / 7;
+        xSpace = fieldSize.x / 10;
+        ySpace = fieldSize.y / 10;
         heatMap = new int[fieldSize.x, fieldSize.y];
 
         //Adding data for each type of battleship to the dictionary, Cruiser only needed once since it has two entries in the list above. (string[]ships)
