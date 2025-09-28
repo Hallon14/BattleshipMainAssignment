@@ -3,8 +3,7 @@ using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
-using UnityEditor;
-using System.Xml.Serialization;
+using Unity.VisualScripting;
 
 public class gameManager : MonoBehaviour
 {
@@ -28,11 +27,13 @@ public class gameManager : MonoBehaviour
     private int xSize = 10;
     private int ySize = 10;
 
-    //testcomment
+    //UI Variables
+    private TextMeshProUGUI PlayerFieldText;
+    private TextMeshProUGUI AiFieldText;
 
+    //Setup for the game manager
     void Awake()
     {
-        // I wanna keep my gameManager into the next scene, so i can keep variables set in the main menu
         DontDestroyOnLoad(this);
         if (Instance == null)
         {
@@ -41,28 +42,44 @@ public class gameManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
-        }
+        } 
 
-        if (SceneManager.GetActiveScene().buildIndex == 1)
+    }
+
+    private void OnEnable()
+    {
+
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode load)
+    {
+        if (scene.buildIndex == 1)
         {
-            Debug.Log(myField);
             drawGrid();
+            moveCamera.Instance.moveCameraToFit();
         }
-    
     }
 
     public void initLevel(LevelData data)
     {
         myField = data.myField;
         AIField = data.AIField;
+        baseTile = data.basicTile;
+        PlayerFieldText = data.PlayerFieldText;
+        AiFieldText = data.AiFieldText;
+
     }
 
     //Main Menu Buttons
-
     public void playGame()
     {
         SceneManager.LoadScene("BattleshipGame");
-        drawGrid();
     }
 
     public void exitGame()
@@ -84,13 +101,16 @@ public class gameManager : MonoBehaviour
         ySize = (int)ySlider.value;
     }
 
+
+    //Functions for the game
     public void drawGrid()
     {
         for (int x = 0; x < xSize; x++)
         {
             for (int y = 0; y < ySize; y++)
             {
-                myField.SetTile(new Vector3Int( x, y, 0), baseTile);
+                myField.SetTile(new Vector3Int(x - xSize -1, y, 0), baseTile);
+                AIField.SetTile(new Vector3Int(x + 1, y, 0), baseTile);
             }
         }
     }

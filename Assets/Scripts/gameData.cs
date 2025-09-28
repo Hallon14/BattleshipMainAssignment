@@ -18,18 +18,21 @@ public class gameData : MonoBehaviour
         {
             Instantiate(_gameManagerPrefab);
         }
-        
-    }
-
-    public void Start()
-    {
         gameManager.Instance.initLevel(_levelData);
+
     }
 }
 
 [System.Serializable]
 public class LevelData
 {
+    //Variables for tilemap
     public Tilemap myField;
     public Tilemap AIField;
+    public Tile basicTile;
+    public Tile shipTile;
+
+    //UI Variables
+    public TextMeshProUGUI PlayerFieldText;
+    public TextMeshProUGUI AiFieldText;
 }
