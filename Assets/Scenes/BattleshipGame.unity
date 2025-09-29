@@ -323,6 +323,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   playerTilemap: {fileID: 1139854454}
   aiTilemap: {fileID: 1128905822}
+  extraSpace: 1
 --- !u!1 &206583595
 GameObject:
   m_ObjectHideFlags: 0
@@ -420,7 +421,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &215910979
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -850,6 +851,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1843294945}
+  - component: {fileID: 1843294946}
   m_Layer: 0
   m_Name: InputHandler
   m_TagString: Untagged
@@ -872,6 +874,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1843294946
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1843294944}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c328cc18ff82a7641937a53d1750baa4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InputHandler
+  myField: {fileID: 1139854454}
+  baseTile: {fileID: 11400000, guid: f879a15e3d49a3746bd21a1ae6fa02d6, type: 2}
+  shipTile: {fileID: 11400000, guid: a562d48984a7f094e8980e188d241701, type: 2}
 --- !u!1 &1853228872
 GameObject:
   m_ObjectHideFlags: 0

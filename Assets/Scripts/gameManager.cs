@@ -3,7 +3,6 @@ using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
-using Unity.VisualScripting;
 
 public class gameManager : MonoBehaviour
 {
@@ -12,6 +11,9 @@ public class gameManager : MonoBehaviour
     //Variables needed to play the game
     private Tilemap myField;
     private Tilemap AIField;
+    public bool[,] playerArray;
+    public bool[,] AiArray;
+
     [SerializeField]
     private Tile baseTile;
     [SerializeField]
@@ -24,8 +26,8 @@ public class gameManager : MonoBehaviour
     public TextMeshProUGUI yAxisText;
 
     //Variables for x,y Sizes
-    private int xSize = 10;
-    private int ySize = 10;
+    public int xSize = 10;
+    public int ySize = 10;
 
     //UI Variables
     private TextMeshProUGUI PlayerFieldText;
@@ -63,6 +65,8 @@ public class gameManager : MonoBehaviour
         {
             drawGrid();
             moveCamera.Instance.moveCameraToFit();
+            playerArray = new bool[xSize, ySize];
+            AiArray = new bool[xSize, ySize];
         }
     }
 

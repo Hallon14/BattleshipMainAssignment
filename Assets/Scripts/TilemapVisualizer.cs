@@ -3,6 +3,12 @@ using UnityEngine.Tilemaps;
 
 public class TilemapVisualizer : MonoBehaviour
 {
+
+    /* 
+    Change playerGrid and gridSize to public within Roberts code.'
+    Aswell as the changes he told us to make like the name of the AI and (optionally) the amount of tests you want to run.
+    Make sure you drag the tiles and tilemap to the correct slot in the inspector
+     */
     public Tilemap tilemap;    
     public Tile shipTile;     
     public Tile waterTile;

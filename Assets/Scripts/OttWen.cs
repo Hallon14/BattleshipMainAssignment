@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Numerics;
 using NUnit.Framework.Interfaces;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -46,6 +47,7 @@ public class OttWen : IBattleship
     HashSet<Vector2Int> hits;
     HashSet<Vector2Int> misses;
     public currentState state;
+    int initialFireShots;
 
 
     //Return variables for Result()
@@ -70,6 +72,8 @@ public class OttWen : IBattleship
         xSpace = fieldSize.x / 10;
         ySpace = fieldSize.y / 10;
         heatMap = new int[fieldSize.x, fieldSize.y];
+        int initialFireShots = 4;
+
 
         //Adding data for each type of battleship to the dictionary, Cruiser only needed once since it has two entries in the list above. (string[]ships)
         shipData.Add(shipType.Battleship, 4);
@@ -217,23 +221,40 @@ public class OttWen : IBattleship
             case currentState.Initialize:
                 initialFire();
                 break;
+
             case currentState.Search:
-                //Searchfire
-                break;
-            case currentState.Hunt:
-                //Huntfire
+                searchFire();
                 break;
 
+            case currentState.Hunt:
+                huntFire();
+                break;
         }
         return Vector2Int.zero;
-            
+
         //NOTE TO SELF. WHEN SHIP IS SUNK. ADD ALL SURROUNGING TILES TO MISSES. AS NO SHIP CAN BE NEXT TO ONE ANOTHER
     }
 
     public Vector2Int initialFire()
     {
+        //heatMap.
+        if (initialFireShots <= 0)
+        {
+            state = currentState.Search;
+        }
         return Vector2Int.zero;
     }
+
+    public Vector2Int searchFire()
+    {
+        return Vector2Int.zero;
+    }
+
+    public Vector2Int huntFire(){
+        return Vector2Int.zero;      
+    }
+
+
     /* 
     As soon as i hit something, i want to enter hunt mode in the statemachine. And calculate next firing location
     And when i have sunk that ship, i want to go back into searchmode. 
@@ -248,6 +269,7 @@ public class OttWen : IBattleship
         if (lastShotHit)
         {
             hits.Add(lastShot);
+            state = currentState.Hunt;
         }
         else
         {
@@ -258,10 +280,12 @@ public class OttWen : IBattleship
         //Passing variables to update heatmap
         updateHeatmap(heatMap, lastShot, enemyShips, hits, misses);
     }
+    #endregion
 
     //Helper function to update my heatmap - taking all previous hits/misses into consideration
     public void updateHeatmap(int[,] heatMap, Vector2Int location, List<shipType> enemyShips, HashSet<Vector2Int> hits, HashSet<Vector2Int> misses)
     {
+    #region Heatmap
         //Resetting the entire heatmap everytime to recalculate using the HashSets
         for (int x = 0; x < fieldSize.x; x++)
             for (int y = 0; y < fieldSize.y; y++)

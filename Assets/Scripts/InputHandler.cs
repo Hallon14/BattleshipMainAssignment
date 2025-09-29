@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
@@ -35,9 +36,12 @@ public class InputHandler : MonoBehaviour
         if (myField.HasTile(cellPos))
         {
             Tile newTile = myField.GetTile(cellPos) == baseTile ?
-            shipTile :
-            baseTile;
+                shipTile:
+                baseTile;
 
+            Debug.Log(cellPos.x + gameManager.Instance.xSize + 1);
+            Debug.Log(cellPos.y);
+            gameManager.Instance.playerArray[cellPos.x + gameManager.Instance.xSize + 1, cellPos.y] = true;
             myField.SetTile(cellPos, newTile);
         }
 
