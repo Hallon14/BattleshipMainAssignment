@@ -885,11 +885,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c328cc18ff82a7641937a53d1750baa4, type: 3}
   m_Name: 
-<<<<<<< Updated upstream
   m_EditorClassIdentifier: Assembly-CSharp::InputHandler
-=======
-  m_EditorClassIdentifier: '::'
->>>>>>> Stashed changes
   myField: {fileID: 1139854454}
   baseTile: {fileID: 11400000, guid: f879a15e3d49a3746bd21a1ae6fa02d6, type: 2}
   shipTile: {fileID: 11400000, guid: a562d48984a7f094e8980e188d241701, type: 2}
