@@ -1,8 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
-using NUnit.Framework.Interfaces;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public enum rotation
@@ -47,13 +44,18 @@ public class OttWen : IBattleship
     HashSet<Vector2Int> hits;
     HashSet<Vector2Int> misses;
     public currentState state;
-    int initialFireShots;
+
+    //Variables used in the different fireing functions
+    private int initialFireShots;
+    private Vector2Int bestShotLocation;
+    private List<Vector2Int> activeHunt = new List<Vector2Int>();
 
 
     //Return variables for Result()
     public Vector2Int lastShot;
     public bool lastShotHit;
     public bool lastShotSunk;
+    
 
 
     //Function to return my AI player name to Robert-Sensei
@@ -64,7 +66,7 @@ public class OttWen : IBattleship
 
     public bool[,] NewGame(Vector2Int gridSize, string opponentName)
     {
-        #region Start
+        #region Startup
         //Takes the gridsize from function and created a grid for me and my foe.
         //Note int[] for opposing side to keep track of probablilites
         fieldSize = gridSize;
@@ -72,7 +74,8 @@ public class OttWen : IBattleship
         xSpace = fieldSize.x / 10;
         ySpace = fieldSize.y / 10;
         heatMap = new int[fieldSize.x, fieldSize.y];
-        int initialFireShots = 4;
+        int initialFireShots = 5;
+        
 
 
         //Adding data for each type of battleship to the dictionary, Cruiser only needed once since it has two entries in the list above. (string[]ships)
@@ -199,7 +202,6 @@ public class OttWen : IBattleship
             }
         }
 
-
         //All tests passed, return true
         return true;
         #endregion
@@ -237,23 +239,93 @@ public class OttWen : IBattleship
 
     public Vector2Int initialFire()
     {
-        //heatMap.
+        //if initialfireshot is set to 1, i'd like that shot to be as close to the middle as posible
+        if (initialFireShots == 1)
+        {
+            initialFireShots--;
+            return new Vector2Int(Mathf.RoundToInt(fieldSize.x / 2), Mathf.RoundToInt(fieldSize.y / 2));
+        }
+
+        //If the inital fireshots are over. We swap to the searchmode and fire trough that function instead.
         if (initialFireShots <= 0)
         {
             state = currentState.Search;
+            Debug.Log("Initial fire complete. Swapped to " + state);
+            return searchFire();
         }
-        return Vector2Int.zero;
+        
+        while (true)
+        {
+            Vector2Int randomShot = new Vector2Int(Random.Range(0, fieldSize.x), Random.Range(0, fieldSize.y));
+            if (!hits.Contains(randomShot) && !misses.Contains(randomShot))
+            {
+                initialFireShots--;
+                return randomShot;
+            }
+        }
     }
 
     public Vector2Int searchFire()
     {
-        return Vector2Int.zero;
+        //Variable to calulate higest probablity shot depending on active heatmap
+        int bestShotProbablity = 0;
+
+        for (int x = 0; x < fieldSize.x; x++)
+        {
+            for (int y = 0; y < fieldSize.y; y++)
+            {
+                if (heatMap[x, y] >= bestShotProbablity)
+                {
+                    bestShotLocation = new Vector2Int(x, y);
+                }
+            }
+        }
+        return bestShotLocation;
     }
 
     public Vector2Int huntFire(){
-        return Vector2Int.zero;      
-    }
 
+        //Collect all options
+        List<Vector2Int> options = new List<Vector2Int>();
+        Vector2Int[] cardinalDirection = { Vector2Int.down, Vector2Int.up, Vector2Int.left, Vector2Int.right };
+
+        foreach (Vector2Int hit in activeHunt)
+        {
+            foreach (Vector2Int direction in cardinalDirection)
+            {
+                Vector2Int option = hit + direction;
+                if (option.x < 0 ||
+                    option.y < 0 ||
+                    option.x > fieldSize.x ||
+                    option.y > fieldSize.y)
+                {
+                    continue;
+                }
+
+                if (hits.Contains(option) || misses.Contains(option))
+                {
+                    continue;
+                }
+
+                options.Add(option);
+            }
+        }
+
+        Vector2Int bestOption = options[0];
+        int heatMapHighScore = heatMap[bestOption.x, bestOption.y];
+
+        foreach (Vector2Int option in options)
+        {
+            int score = heatMap[option.x, option.y];
+            if (score > heatMapHighScore)
+            {
+                heatMapHighScore = score;
+                bestOption = option;
+            }
+        }
+
+        return bestOption;  
+    }
 
     /* 
     As soon as i hit something, i want to enter hunt mode in the statemachine. And calculate next firing location
@@ -270,13 +342,13 @@ public class OttWen : IBattleship
         {
             hits.Add(lastShot);
             state = currentState.Hunt;
+            Debug.Log("Hit a shot! Swapped to " + state);
+            activeHunt.Add(lastShot);
         }
         else
         {
             misses.Add(lastShot);
         }
-
-
         //Passing variables to update heatmap
         updateHeatmap(heatMap, lastShot, enemyShips, hits, misses);
     }
