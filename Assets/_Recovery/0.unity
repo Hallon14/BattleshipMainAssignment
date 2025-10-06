@@ -288,9 +288,7 @@ MonoBehaviour:
     myField: {fileID: 1139854454}
     AIField: {fileID: 1128905822}
     basicTile: {fileID: 11400000, guid: f879a15e3d49a3746bd21a1ae6fa02d6, type: 2}
-    shipTile: {fileID: 11400000, guid: a562d48984a7f094e8980e188d241701, type: 2}
-    hitTile: {fileID: 11400000, guid: af46f163cff6b9640886cfa9f482f306, type: 2}
-    missTile: {fileID: 11400000, guid: 902ab5ca82984714c82845a8735b39b4, type: 2}
+    shipTile: {fileID: 0}
     PlayerFieldText: {fileID: 2037116104}
     AiFieldText: {fileID: 2129354374}
   _gameManagerPrefab: {fileID: 4113938624274776001, guid: d21c91b1ca2ca1448a7a1f526f745216, type: 3}
@@ -1159,10 +1157,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InputHandler
   myField: {fileID: 1139854454}
+  enemyField: {fileID: 1128905822}
   baseTile: {fileID: 11400000, guid: f879a15e3d49a3746bd21a1ae6fa02d6, type: 2}
   shipTile: {fileID: 11400000, guid: a562d48984a7f094e8980e188d241701, type: 2}
-  hitTile: {fileID: 11400000, guid: af46f163cff6b9640886cfa9f482f306, type: 2}
-  missTile: {fileID: 11400000, guid: 902ab5ca82984714c82845a8735b39b4, type: 2}
+  validateButton: {fileID: 1544993080}
 --- !u!1 &1853228872
 GameObject:
   m_ObjectHideFlags: 0
