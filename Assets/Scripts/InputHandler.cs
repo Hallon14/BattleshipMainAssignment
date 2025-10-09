@@ -4,24 +4,30 @@ using UnityEngine.Tilemaps;
 
 public class InputHandler : MonoBehaviour
 {
+    public static InputHandler Instance = null;
     public Tilemap myField;
-    public Tilemap enemyField;
-
     public Tile baseTile;
     public Tile shipTile;
-
+    public Tile hitTile;
+    public Tile missTile;
     InputAction interact;
-    public GameObject validateButton;
 
-    //Setup
     void Awake()
     {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
         interact = InputSystem.actions.FindAction("Battleships/Interact");
     }
 
     void OnEnable()
     {
-        interact.performed += OnSetupInteract;
+        //interact.performed += OnInteract();
         interact.Enable();
     }
 
@@ -30,16 +36,9 @@ public class InputHandler : MonoBehaviour
         interact.Disable();
     }
 
-    private void OnSetupInteract(InputAction.CallbackContext context)
+    void OnInteract(InputAction.CallbackContext contrext)
     {
         SwapTile();
-    }
-
-    private void OnPlayingInteract(InputAction.CallbackContext context)
-    {
-        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
-        Vector3Int cellPos = myField.WorldToCell(mousePos);
-
     }
 
     private void SwapTile()
@@ -50,32 +49,28 @@ public class InputHandler : MonoBehaviour
         if (myField.HasTile(cellPos))
         {
             Tile newTile = myField.GetTile(cellPos) == baseTile ?
-                placeShipTile(cellPos) :
-                placeBaseTile(cellPos);
+                shipTile :
+                baseTile;
+
+            Debug.Log(cellPos.x + gameManager.Instance.xSize + 1);
+            Debug.Log(cellPos.y);
+            gameManager.Instance.playerArray[cellPos.x + gameManager.Instance.xSize + 1, cellPos.y] = true;
+            myField.SetTile(cellPos, newTile);
         }
     }
 
-    private Tile placeShipTile(Vector3Int cellPos)
+    public void placeHitTile(Vector3Int location, Tilemap gridToDrawOn)
     {
-        gameManager.Instance.playerArray[cellPos.x + gameManager.Instance.xSize + 1, cellPos.y] = true;
-        myField.SetTile(cellPos, shipTile);
-        return shipTile;
+        if (gridToDrawOn.HasTile(location))
+        {
+            gridToDrawOn.SetTile(location, hitTile);
+        }
     }
-
-    private Tile placeBaseTile(Vector3Int cellPos)
+    public void placeMissTile(Vector3Int location, Tilemap gridToDrawOn)
     {
-        gameManager.Instance.playerArray[cellPos.x + gameManager.Instance.xSize + 1, cellPos.y] = false;
-        myField.SetTile(cellPos, baseTile);
-        return baseTile;
-    }
-
-
-    public void ValidatePlayer()
-    {
-        Debug.Log("Maybe not valid but if Otto is playing he knows the rules");
-        interact.performed -= OnSetupInteract;
-        interact.performed += OnPlayingInteract;
-        validateButton.SetActive(false);
-
+        if (gridToDrawOn.HasTile(location))
+        {
+            gridToDrawOn.SetTile(location, hitTile);
+        }
     }
 }

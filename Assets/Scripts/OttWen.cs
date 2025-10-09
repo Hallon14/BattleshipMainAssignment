@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Numerics;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public enum rotation
 {
@@ -46,7 +47,7 @@ public class ComEne : IBattleship
     public currentState state;
 
     //Variables used in the different fireing functions
-    private int initialFireShots;
+    private int initialFireShots = 5;
     private Vector2Int bestShotLocation;
     private List<Vector2Int> activeHunt = new List<Vector2Int>();
 
@@ -218,7 +219,7 @@ public class ComEne : IBattleship
 
     public Vector2Int Fire()
     {
-
+        Vector2Int shot;
         switch (state)
         {
             case currentState.Initialize:
@@ -229,9 +230,6 @@ public class ComEne : IBattleship
 
             case currentState.Hunt:
                 return huntFire();
-
-
-                //NOTE TO SELF. WHEN SHIP IS SUNK. ADD ALL SURROUNGING TILES TO MISSES. AS NO SHIP CAN BE NEXT TO ONE ANOTHER
         }
         return Vector2Int.zero;
     }
@@ -271,7 +269,7 @@ public class ComEne : IBattleship
         Vector2Int testShotLocation = Vector2Int.zero;
         Vector2Int bestShotLocation = Vector2Int.zero;
         HashSet<Vector2Int> attempts = new HashSet<Vector2Int>();
-
+        
         for (int x = 0; x < fieldSize.x; x++)
         {
             for (int y = 0; y < fieldSize.y; y++)
@@ -282,8 +280,8 @@ public class ComEne : IBattleship
                     attempts.Add(testShotLocation);
                     if (!hits.Contains(testShotLocation) && !misses.Contains(testShotLocation))
                     {
-                        bestShotProbablity = heatMap[x, y];
                         bestShotLocation = testShotLocation;
+                        bestShotProbablity = heatMap[x, y];
                     }
                 }
             }
@@ -322,9 +320,11 @@ public class ComEne : IBattleship
         }
 
         if (options.Count == 0)
+        {
             return searchFire();
+        }
 
-        Vector2Int bestOption = options[0];
+        Vector2Int bestOption = options[0]; //Need fixings
         int heatMapHighScore = heatMap[bestOption.x, bestOption.y];
 
         foreach (Vector2Int option in options)
@@ -366,8 +366,7 @@ public class ComEne : IBattleship
         if (lastShotSunk)
         {
             state = currentState.Search;
-            /*   Debug.Log("Just sunk a ship, returning to search behaviour: " + state); */
-            activeHunt.Clear();
+            Debug.Log("Just sunk a ship, returning to search behaviour: " + state);
         }
         //Passing variables to update heatmap
         updateHeatmap(heatMap, lastShot, enemyShips, hits, misses);

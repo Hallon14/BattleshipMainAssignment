@@ -1,8 +1,6 @@
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using UnityEngine.UI;
 
 public class gameData : MonoBehaviour
 {
@@ -31,6 +29,8 @@ public class LevelData
     public Tilemap AIField;
     public Tile basicTile;
     public Tile shipTile;
+    public Tile hitTile;
+    public Tile missTile;
 
     //UI Variables
     public TextMeshProUGUI PlayerFieldText;
