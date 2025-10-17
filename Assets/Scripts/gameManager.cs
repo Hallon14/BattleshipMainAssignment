@@ -148,13 +148,99 @@ public class gameManager : MonoBehaviour
     }
     private void validatePlayer()
     {
-        Debug.Log("Might not be valid, but if otto is playing he knows the rules");
-        // Turn off inputs on player tilemap InputHandler.Instance.
-        validateButton.onClick.RemoveListener(validatePlayer);
-        Destroy(validateButton);
-        playBattleships();
+        bool playerValid = false;
 
+        if (playerValid)
+        {
+            validateButton.onClick.RemoveListener(validatePlayer);
+            Destroy(validateButton);
+            playBattleships();
+        }
     }
+
+    private bool Validate(bool[,] playerGrid)
+    {
+        //check so grid size is correct
+        if (playerGrid.GetLength(0) != xSize || playerGrid.GetLength(1) != ySize)
+            return false;
+
+        //check for number of ship squares, should be 13
+        int sum = 0;
+        foreach (bool gridSpace in playerGrid)
+        {
+            if (gridSpace)
+                sum++;
+        }
+
+        if (sum != 13)
+            return false;
+
+        //Validation for all ship types
+        List<int> ships = new List<int>();
+        int shipLength = 0;
+        bool lastcheck = false;
+        for (int x = 0; x < playerGrid.GetLength(0); x++)
+        {
+            for (int y = 0; y < playerGrid.GetLength(1); y++)
+            {
+                if (playerGrid[x, y])
+                {
+                    shipLength++;
+                    lastcheck = true;
+                }
+
+                if (lastcheck && !playerGrid[x, y] || y == playerGrid.GetLength(1) - 1)
+                {
+                    if (shipLength > 1)
+                        ships.Add(shipLength);
+                    //we have found the end of a ship.
+
+                    shipLength = 0;
+                    lastcheck = false;
+                }
+            }
+        }
+
+        for (int y = 0; y < playerGrid.GetLength(1); y++)
+        {
+            for (int x = 0; x < playerGrid.GetLength(0); x++)
+            {
+                if (playerGrid[x, y])
+                {
+                    shipLength++;
+                    lastcheck = true;
+                }
+
+                if (lastcheck && !playerGrid[x, y] || x == playerGrid.GetLength(0) - 1)
+                {
+                    if (shipLength > 1)
+                        ships.Add(shipLength);
+                    //we have found the end of a ship.
+
+                    shipLength = 0;
+                    lastcheck = false;
+                }
+            }
+        }
+
+        //We should find 4 ships, if we have found more or less, 
+        //they are not positioned correctly.
+        if (ships.Count != 4)
+            return false;
+
+        ships.Sort();
+        int[] correctShips = { 2, 3, 3, 4 };
+
+        for (int i = 0; i < ships.Count; i++)
+        {
+            if (correctShips[i] != ships[i])
+                return false;
+        }
+
+        //all checks passed, we are valid
+        return true;
+    }
+    
     public void playBattleships()
     {
         gameIsPlaying = true;
@@ -183,29 +269,7 @@ public class gameManager : MonoBehaviour
         {
             InputHandler.Instance.placeMissTile((Vector3Int)lastAiShot, myField);
         }
-        
-    }
 
-    public bool sunkCheck(Vector2Int shot, bool[,] gridToCheck)
-    {
-        for (int x = shot.x - 4; x <= shot.x + 4; x++)
-        {
-            for (int y = shot.y - 4; y <= shot.y - 4; y++)
-            {
-                try
-                {
-                    if (gridToCheck[shot.x, shot.y] == true && !aiHits.Contains(shot))
-                    {
-                        return false;
-                    }
-                }
-                catch (IndexOutOfRangeException)
-                {
-                    continue;
-                }
-            }
-        }
-        return true;
     }
 }
 

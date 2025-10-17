@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Numerics;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 public enum rotation
 {
@@ -47,7 +46,7 @@ public class OttWen : IBattleship
     public currentState state;
 
     //Variables used in the different fireing functions
-    private int initialFireShots = 5;
+    private int initialFireShots;
     private Vector2Int bestShotLocation;
     private List<Vector2Int> activeHunt = new List<Vector2Int>();
 
@@ -74,8 +73,9 @@ public class OttWen : IBattleship
         xSpace = fieldSize.x / 10;
         ySpace = fieldSize.y / 10;
         heatMap = new int[fieldSize.x, fieldSize.y];
-        
-        
+        initialFireShots = Mathf.RoundToInt(fieldSize.x * fieldSize.y * 0.15f);
+
+
 
 
         //Adding data for each type of battleship to the dictionary, Cruiser only needed once since it has two entries in the list above. (string[]ships)
@@ -218,7 +218,7 @@ public class OttWen : IBattleship
 
     public Vector2Int Fire()
     {
-        Vector2Int shot;
+
         switch (state)
         {
             case currentState.Initialize:
@@ -229,10 +229,11 @@ public class OttWen : IBattleship
 
             case currentState.Hunt:
                 return huntFire();
+
+
+                //NOTE TO SELF. WHEN SHIP IS SUNK. ADD ALL SURROUNGING TILES TO MISSES. AS NO SHIP CAN BE NEXT TO ONE ANOTHER
         }
         return Vector2Int.zero;
-
-        //NOTE TO SELF. WHEN SHIP IS SUNK. ADD ALL SURROUNGING TILES TO MISSES. AS NO SHIP CAN BE NEXT TO ONE ANOTHER
     }
 
     public Vector2Int initialFire()
@@ -248,10 +249,10 @@ public class OttWen : IBattleship
         if (initialFireShots <= 0)
         {
             state = currentState.Search;
-            Debug.Log("Initial fire complete. Swapped to " + state);
+            /*  Debug.Log("Initial fire complete. Swapped to " + state); */
             return searchFire();
         }
-        
+
         while (true)
         {
             Vector2Int randomShot = new Vector2Int(Random.Range(0, fieldSize.x), Random.Range(0, fieldSize.y));
@@ -270,7 +271,7 @@ public class OttWen : IBattleship
         Vector2Int testShotLocation = Vector2Int.zero;
         Vector2Int bestShotLocation = Vector2Int.zero;
         HashSet<Vector2Int> attempts = new HashSet<Vector2Int>();
-        
+
         for (int x = 0; x < fieldSize.x; x++)
         {
             for (int y = 0; y < fieldSize.y; y++)
@@ -281,8 +282,8 @@ public class OttWen : IBattleship
                     attempts.Add(testShotLocation);
                     if (!hits.Contains(testShotLocation) && !misses.Contains(testShotLocation))
                     {
-                        bestShotLocation = testShotLocation;
                         bestShotProbablity = heatMap[x, y];
+                        bestShotLocation = testShotLocation;
                     }
                 }
             }
@@ -291,7 +292,8 @@ public class OttWen : IBattleship
         return bestShotLocation;
     }
 
-    public Vector2Int huntFire(){
+    public Vector2Int huntFire()
+    {
 
         //Collect all options
         List<Vector2Int> options = new List<Vector2Int>();
@@ -304,8 +306,8 @@ public class OttWen : IBattleship
                 Vector2Int option = hit + direction;
                 if (option.x < 0 ||
                     option.y < 0 ||
-                    option.x > fieldSize.x ||
-                    option.y > fieldSize.y)
+                    option.x >= fieldSize.x ||
+                    option.y >= fieldSize.y)
                 {
                     continue;
                 }
@@ -320,11 +322,9 @@ public class OttWen : IBattleship
         }
 
         if (options.Count == 0)
-        {
             return searchFire();
-        }
 
-        Vector2Int bestOption = options[0]; //Need fixings
+        Vector2Int bestOption = options[0];
         int heatMapHighScore = heatMap[bestOption.x, bestOption.y];
 
         foreach (Vector2Int option in options)
@@ -337,7 +337,7 @@ public class OttWen : IBattleship
             }
         }
 
-        return bestOption;  
+        return bestOption;
     }
 
     /* 
@@ -355,7 +355,7 @@ public class OttWen : IBattleship
         {
             hits.Add(lastShot);
             state = currentState.Hunt;
-            Debug.Log("Hit a shot! Swapped to " + state);
+            /*  Debug.Log("Hit a shot! Swapped to " + state); */
             activeHunt.Add(lastShot);
         }
         else
@@ -366,7 +366,8 @@ public class OttWen : IBattleship
         if (lastShotSunk)
         {
             state = currentState.Search;
-            Debug.Log("Just sunk a ship, returning to search behaviour: " + state);
+            /*   Debug.Log("Just sunk a ship, returning to search behaviour: " + state); */
+            activeHunt.Clear();
         }
         //Passing variables to update heatmap
         updateHeatmap(heatMap, lastShot, enemyShips, hits, misses);
@@ -376,7 +377,7 @@ public class OttWen : IBattleship
     //Helper function to update my heatmap - taking all previous hits/misses into consideration
     public void updateHeatmap(int[,] heatMap, Vector2Int location, List<shipType> enemyShips, HashSet<Vector2Int> hits, HashSet<Vector2Int> misses)
     {
-    #region Heatmap
+        #region Heatmap
         //Resetting the entire heatmap everytime to recalculate using the HashSets
         for (int x = 0; x < fieldSize.x; x++)
             for (int y = 0; y < fieldSize.y; y++)
@@ -441,4 +442,4 @@ public class OttWen : IBattleship
         }
     }
     #endregion
-} 
+}
