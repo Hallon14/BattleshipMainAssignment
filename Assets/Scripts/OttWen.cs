@@ -70,6 +70,14 @@ public class OttWen : IBattleship
         //Note int[] for opposing side to keep track of probablilites
         fieldSize = gridSize;
         myBoard = new bool[fieldSize.x, fieldSize.y];
+        for (int x = 0; x < fieldSize.x; x++)
+        {
+            for (int y = 0; y < fieldSize.y; y++)
+            {
+                myBoard[x.y] = false;
+            }
+        }
+
         xSpace = fieldSize.x / 10;
         ySpace = fieldSize.y / 10;
         heatMap = new int[fieldSize.x, fieldSize.y];
